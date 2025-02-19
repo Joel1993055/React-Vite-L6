@@ -1,53 +1,115 @@
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import './App.css';
+
+function HeroSection() {
+  return (
+    <motion.section
+      className="h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+    >
+      <h1 className="text-6xl font-extrabold mb-4">🏊‍♂️ Swim Coach Tools</h1>
+      <p className="text-xl mb-6">Planifica, analiza y mejora el rendimiento de tus nadadores</p>
+      <Link
+        to="/dashboard"
+        className="bg-white text-blue-600 px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-gray-200 transition"
+      >
+        🚀 Empezar ahora
+      </Link>
+    </motion.section>
+  );
+}
+
+function Dashboard() {
+  const data = [
+    { name: 'Semana 1', rendimiento: 50 },
+    { name: 'Semana 2', rendimiento: 65 },
+    { name: 'Semana 3', rendimiento: 75 },
+    { name: 'Semana 4', rendimiento: 90 },
+  ];
+
+  return (
+    <motion.section
+      className="p-8 bg-white rounded-lg shadow-lg"
+      initial={{ y: 50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">📊 Progreso del Nadador</h2>
+      <LineChart width={800} height={400} data={data}>
+        <Line type="monotone" dataKey="rendimiento" stroke="#3b82f6" strokeWidth={3} />
+        <CartesianGrid stroke="#e5e7eb" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+      </LineChart>
+    </motion.section>
+  );
+}
+
+function Formulario() {
+  const { register, handleSubmit, reset } = useForm();
+  const onSubmit = (data) => {
+    alert(`Sesión creada: ${JSON.stringify(data)}`);
+    reset();
+  };
+
+  return (
+    <motion.section
+      className="p-8 bg-white rounded-lg shadow-lg mt-8"
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-3xl font-bold text-gray-800 mb-4">📝 Crear Nueva Sesión</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <input {...register('nombre')} placeholder="Nombre de la sesión" className="border p-3 rounded w-full" required />
+        <input {...register('duracion')} placeholder="Duración (min)" className="border p-3 rounded w-full" required />
+        <input type="date" {...register('fecha')} className="border p-3 rounded w-full" required />
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full"
+        >
+          💾 Guardar Sesión
+        </button>
+      </form>
+    </motion.section>
+  );
+}
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex flex-col">
-      <header className="w-full py-6 px-10 flex justify-between items-center bg-opacity-50 bg-black">
-        <h1 className="text-3xl font-bold">🏊 Swim Coach Tools</h1>
-        <nav>
-          <ul className="flex space-x-6 text-lg">
-            <li className="hover:text-gray-300 cursor-pointer">Inicio</li>
-            <li className="hover:text-gray-300 cursor-pointer">Características</li>
-            <li className="hover:text-gray-300 cursor-pointer">Contacto</li>
-          </ul>
-        </nav>
-      </header>
+    <Router>
+      <div className="bg-gray-100 min-h-screen flex flex-col">
+        <header className="bg-white shadow-lg py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+          <h1 className="text-2xl font-bold text-blue-600">🏊 Swim Coach Tools</h1>
+          <nav>
+            <ul className="flex space-x-6 text-gray-600">
+              <li><Link to="/" className="hover:text-blue-600">Inicio</Link></li>
+              <li><Link to="/dashboard" className="hover:text-blue-600">Dashboard</Link></li>
+              <li><Link to="/formulario" className="hover:text-blue-600">Crear Sesión</Link></li>
+            </ul>
+          </nav>
+        </header>
 
-      <main className="flex flex-1 flex-col justify-center items-center text-center px-6">
-        <h2 className="text-5xl font-extrabold leading-tight mb-6">
-          💡 Herramientas inteligentes para entrenadores de natación
-        </h2>
-        <p className="text-lg mb-8 max-w-2xl">
-          Gestiona entrenamientos, analiza el rendimiento y ayuda a tus nadadores a alcanzar su máximo potencial. Todo en un solo lugar, con una experiencia intuitiva y moderna.
-        </p>
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold py-3 px-8 rounded-lg text-xl transition">
-          🚀 Empezar ahora
-        </button>
-      </main>
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<HeroSection />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/formulario" element={<Formulario />} />
+          </Routes>
+        </main>
 
-      <section className="bg-white text-gray-800 py-12 px-6 text-center">
-        <h3 className="text-3xl font-bold mb-6">✨ Características principales</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-            <h4 className="text-2xl font-semibold mb-2">📅 Gestión de Sesiones</h4>
-            <p>Organiza y programa sesiones de entrenamiento de manera eficiente.</p>
-          </div>
-          <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-            <h4 className="text-2xl font-semibold mb-2">📊 Análisis de Datos</h4>
-            <p>Visualiza el progreso de tus nadadores con métricas clave (próximamente).</p>
-          </div>
-          <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-            <h4 className="text-2xl font-semibold mb-2">🌟 Perfil Personalizado</h4>
-            <p>Cada nadador tiene un perfil detallado para un seguimiento personalizado.</p>
-          </div>
-        </div>
-      </section>
-
-      <footer className="bg-gray-900 text-white text-center py-6">
-        <p>© 2025 Swim Coach Tools - Hecho con ❤️ usando React + Vite + TailwindCSS 🚀</p>
-      </footer>
-    </div>
+        <footer className="bg-gray-800 text-white py-6 text-center">
+          <p>© 2025 Swim Coach Tools - React, Vite, TailwindCSS, Recharts, Framer Motion 🚀</p>
+        </footer>
+      </div>
+    </Router>
   );
 }
 
